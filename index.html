@@ -51,12 +51,16 @@
             width: 100%;
             border-radius: 1rem;
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-            animation: subtle-ship-motion 9s ease-in-out infinite;
+            animation: subtle-ship-motion 6s ease-in-out infinite;
         }
 
         @keyframes subtle-ship-motion {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-3px) rotate(0.15deg); }
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg); 
+            }
+            50% { 
+                transform: translateY(-8px) rotate(0.4deg); 
+            }
         }
 
         #console-lights {
@@ -148,12 +152,12 @@
             lights = [];
             
             const lightPositions = [
-                { x: 0.18, y: 0.78, size: 2.8 },
-                { x: 0.25, y: 0.82, size: 2.2 },
-                { x: 0.32, y: 0.79, size: 2.5 },
-                { x: 0.48, y: 0.85, size: 2.0 },
-                { x: 0.55, y: 0.81, size: 2.6 },
-                { x: 0.62, y: 0.84, size: 2.1 },
+                { x: 0.18, y: 0.78, size: 3.2 },
+                { x: 0.25, y: 0.82, size: 2.6 },
+                { x: 0.32, y: 0.79, size: 3.0 },
+                { x: 0.48, y: 0.85, size: 2.4 },
+                { x: 0.55, y: 0.81, size: 3.1 },
+                { x: 0.62, y: 0.84, size: 2.5 },
             ];
             
             lightPositions.forEach((pos, index) => {
@@ -161,9 +165,9 @@
                     x: pos.x * canvas.width,
                     y: pos.y * canvas.height,
                     size: pos.size,
-                    baseOpacity: 0.25 + Math.random() * 0.15,
-                    phase: index * 1.8,
-                    speed: 0.8 + Math.random() * 0.6
+                    baseOpacity: 0.35 + Math.random() * 0.2,
+                    phase: index * 1.6,
+                    speed: 1.1 + Math.random() * 0.7
                 });
             });
         }
@@ -174,9 +178,9 @@
             
             lights.forEach(light => {
                 const pulse = Math.sin(time * light.speed + light.phase) * 0.5 + 0.5;
-                const opacity = light.baseOpacity * (0.6 + pulse * 0.8);
+                const opacity = light.baseOpacity * (0.5 + pulse * 1.0);
                 
-                ctx.shadowBlur = 6;
+                ctx.shadowBlur = 8;
                 ctx.shadowColor = '#67e8f9';
                 
                 ctx.fillStyle = `rgba(103, 232, 249, ${opacity})`;
