@@ -51,22 +51,6 @@
             width: 100%;
             border-radius: 1rem;
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-            animation: spacecraft-motion 7s ease-in-out infinite;
-        }
-
-        @keyframes spacecraft-motion {
-            0%, 100% { 
-                transform: translateY(0) rotate(0deg); 
-            }
-            25% { 
-                transform: translateY(-4px) rotate(0.25deg); 
-            }
-            50% { 
-                transform: translateY(-7px) rotate(-0.15deg); 
-            }
-            75% { 
-                transform: translateY(-3px) rotate(0.2deg); 
-            }
         }
 
         #console-lights {
@@ -88,7 +72,7 @@
         <div class="flex-1 flex items-center justify-center px-5 sm:px-6 py-10 sm:py-14">
             <div class="max-w-4xl mx-auto text-center">
                 
-                <!-- Image with Subtle Console Lights -->
+                <!-- Image with Single Red Light -->
                 <div class="image-container mx-auto mb-8 sm:mb-10">
                     <img 
                         src="images/RayHightower_spaceship.jpg" 
@@ -146,7 +130,7 @@
         const canvas = document.getElementById('console-lights');
         const ctx = canvas.getContext('2d');
         
-        let lights = [];
+        let redLight = null;
         
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -154,64 +138,52 @@
             canvas.height = container.offsetHeight;
         }
         
-        function initLights() {
-            lights = [];
-            
-            const lightPositions = [
-                { x: 0.18, y: 0.78, size: 3.2 },
-                { x: 0.25, y: 0.82, size: 2.6 },
-                { x: 0.32, y: 0.79, size: 3.0 },
-                { x: 0.48, y: 0.85, size: 2.4 },
-                { x: 0.55, y: 0.81, size: 3.1 },
-                { x: 0.62, y: 0.84, size: 2.5 },
-            ];
-            
-            lightPositions.forEach((pos, index) => {
-                lights.push({
-                    x: pos.x * canvas.width,
-                    y: pos.y * canvas.height,
-                    size: pos.size,
-                    baseOpacity: 0.35 + Math.random() * 0.2,
-                    phase: index * 1.6,
-                    speed: 1.1 + Math.random() * 0.7
-                });
-            });
+        function initLight() {
+            // Single red light in lower left corner
+            redLight = {
+                x: 0.22 * canvas.width,
+                y: 0.88 * canvas.height,
+                size: 3.5,
+                baseOpacity: 0.45,
+                phase: 0,
+                speed: 0.75   // Slow, subtle red blink
+            };
         }
         
-        function drawLights() {
+        function drawLight() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const time = Date.now() / 1000;
             
-            lights.forEach(light => {
-                const pulse = Math.sin(time * light.speed + light.phase) * 0.5 + 0.5;
-                const opacity = light.baseOpacity * (0.5 + pulse * 1.0);
-                
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = '#67e8f9';
-                
-                ctx.fillStyle = `rgba(103, 232, 249, ${opacity})`;
-                ctx.beginPath();
-                ctx.arc(light.x, light.y, light.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.shadowBlur = 0;
-            });
+            if (!redLight) return;
+            
+            const pulse = Math.sin(time * redLight.speed + redLight.phase) * 0.5 + 0.5;
+            const opacity = redLight.baseOpacity * (0.55 + pulse * 0.9);
+            
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#ef4444';
+            
+            ctx.fillStyle = `rgba(239, 68, 68, ${opacity})`;
+            ctx.beginPath();
+            ctx.arc(redLight.x, redLight.y, redLight.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
         }
         
         function animate() {
-            drawLights();
+            drawLight();
             requestAnimationFrame(animate);
         }
         
         function startAnimation() {
             resizeCanvas();
-            initLights();
+            initLight();
             animate();
         }
         
         window.addEventListener('resize', () => {
             resizeCanvas();
-            initLights();
+            initLight();
         });
         
         window.onload = function() {
