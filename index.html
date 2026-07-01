@@ -46,15 +46,15 @@
             width: 100%;
             border-radius: 1rem;
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-            animation: subtle-ship-motion 8s ease-in-out infinite;
+            animation: subtle-ship-motion 9s ease-in-out infinite;
         }
 
         @keyframes subtle-ship-motion {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-4px) rotate(0.2deg); }
+            50% { transform: translateY(-3px) rotate(0.15deg); }
         }
 
-        #space-canvas {
+        #console-lights {
             position: absolute;
             top: 0;
             left: 0;
@@ -73,14 +73,14 @@
         <div class="flex-1 flex items-center justify-center px-5 sm:px-6 py-10 sm:py-14">
             <div class="max-w-4xl mx-auto text-center">
                 
-                <!-- Image with Comet Animation -->
+                <!-- Image with Subtle Console Lights -->
                 <div class="image-container mx-auto mb-8 sm:mb-10">
                     <img 
                         src="images/RayHightower_spaceship.jpg" 
                         alt="RayHightower in a futuristic spaceship cockpit" 
                         class="spaceship-image"
                     >
-                    <canvas id="space-canvas"></canvas>
+                    <canvas id="console-lights"></canvas>
                 </div>
                 
                 <!-- Logo / Company Name -->
@@ -128,15 +128,10 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('space-canvas');
+        const canvas = document.getElementById('console-lights');
         const ctx = canvas.getContext('2d');
         
-        let comet = {
-            x: 0,
-            y: 0,
-            active: false,
-            progress: 0
-        };
+        let lights = [];
         
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -144,94 +139,70 @@
             canvas.height = container.offsetHeight;
         }
         
-        function launchComet() {
-            // Start from right side, moving left across the upper window area
-            comet.x = canvas.width * 0.85;
-            comet.y = canvas.height * 0.22;   // Upper area (window region)
-            comet.progress = 0;
-            comet.active = true;
+        function initLights() {
+            lights = [];
+            
+            // Console lights positioned roughly over the control panels
+            // (These positions are approximate based on a typical cockpit layout)
+            const lightPositions = [
+                { x: 0.18, y: 0.78, size: 2.8 },   // Left console
+                { x: 0.25, y: 0.82, size: 2.2 },   // Left console
+                { x: 0.32, y: 0.79, size: 2.5 },   // Left console
+                { x: 0.48, y: 0.85, size: 2.0 },   // Center console
+                { x: 0.55, y: 0.81, size: 2.6 },   // Center console
+                { x: 0.62, y: 0.84, size: 2.1 },   // Center-right console
+            ];
+            
+            lightPositions.forEach((pos, index) => {
+                lights.push({
+                    x: pos.x * canvas.width,
+                    y: pos.y * canvas.height,
+                    size: pos.size,
+                    baseOpacity: 0.25 + Math.random() * 0.15,
+                    phase: index * 1.8,           // Different starting points
+                    speed: 0.8 + Math.random() * 0.6
+                });
+            });
         }
         
-        function drawComet() {
-            if (!comet.active) return;
+        function drawLights() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const time = Date.now() / 1000;
             
-            const progress = comet.progress;
-            const startX = canvas.width * 0.85;
-            const endX = canvas.width * 0.15;
-            
-            // Current position (moving left across window)
-            comet.x = startX + (endX - startX) * progress;
-            
-            // Slight downward curve to follow window perspective
-            comet.y = canvas.height * 0.22 + (progress * 25);
-            
-            // Draw comet head (bright core)
-            ctx.save();
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = '#a5f3fc';
-            
-            ctx.fillStyle = '#e0f2fe';
-            ctx.beginPath();
-            ctx.arc(comet.x, comet.y, 3.5, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw glowing tail
-            const tailLength = 45;
-            const tailEndX = comet.x + tailLength * 0.9;
-            
-            const gradient = ctx.createLinearGradient(comet.x, comet.y, tailEndX, comet.y);
-            gradient.addColorStop(0, 'rgba(224, 242, 254, 0.9)');
-            gradient.addColorStop(0.4, 'rgba(103, 232, 249, 0.5)');
-            gradient.addColorStop(1, 'rgba(103, 232, 249, 0)');
-            
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 2.5;
-            ctx.lineCap = 'round';
-            
-            ctx.beginPath();
-            ctx.moveTo(comet.x, comet.y);
-            ctx.lineTo(tailEndX, comet.y + 1);
-            ctx.stroke();
-            
-            ctx.restore();
+            lights.forEach(light => {
+                // Gentle pulsing effect
+                const pulse = Math.sin(time * light.speed + light.phase) * 0.5 + 0.5;
+                const opacity = light.baseOpacity * (0.6 + pulse * 0.8);
+                
+                // Soft glow
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = '#67e8f9';
+                
+                ctx.fillStyle = `rgba(103, 232, 249, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(light.x, light.y, light.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Reset shadow
+                ctx.shadowBlur = 0;
+            });
         }
         
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (comet.active) {
-                comet.progress += 0.008; // Speed of the comet
-                
-                drawComet();
-                
-                // Reset when comet exits the window area
-                if (comet.progress >= 1) {
-                    comet.active = false;
-                    
-                    // Random delay before next comet appears (8 to 18 seconds)
-                    setTimeout(() => {
-                        if (!comet.active) {
-                            launchComet();
-                        }
-                    }, Math.random() * 10000 + 8000);
-                }
-            }
-            
+            drawLights();
             requestAnimationFrame(animate);
         }
         
         function startAnimation() {
             resizeCanvas();
-            
-            // Launch first comet after a short delay
-            setTimeout(() => {
-                launchComet();
-            }, 2500);
-            
+            initLights();
             animate();
         }
         
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initLights();
+        });
         
         window.onload = function() {
             const img = document.querySelector('.spaceship-image');
