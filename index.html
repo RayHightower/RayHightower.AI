@@ -51,15 +51,21 @@
             width: 100%;
             border-radius: 1rem;
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-            animation: subtle-ship-motion 6s ease-in-out infinite;
+            animation: spacecraft-motion 7s ease-in-out infinite;
         }
 
-        @keyframes subtle-ship-motion {
+        @keyframes spacecraft-motion {
             0%, 100% { 
                 transform: translateY(0) rotate(0deg); 
             }
+            25% { 
+                transform: translateY(-4px) rotate(0.25deg); 
+            }
             50% { 
-                transform: translateY(-8px) rotate(0.4deg); 
+                transform: translateY(-7px) rotate(-0.15deg); 
+            }
+            75% { 
+                transform: translateY(-3px) rotate(0.2deg); 
             }
         }
 
