@@ -46,12 +46,12 @@
             width: 100%;
             border-radius: 1rem;
             box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-            animation: subtle-float 8s ease-in-out infinite;
+            animation: subtle-ship-motion 8s ease-in-out infinite;
         }
 
-        @keyframes subtle-float {
+        @keyframes subtle-ship-motion {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(0.3deg); }
+            50% { transform: translateY(-4px) rotate(0.2deg); }
         }
 
         #space-canvas {
@@ -73,7 +73,7 @@
         <div class="flex-1 flex items-center justify-center px-5 sm:px-6 py-10 sm:py-14">
             <div class="max-w-4xl mx-auto text-center">
                 
-                <!-- Animated Image -->
+                <!-- Image with Comet Animation -->
                 <div class="image-container mx-auto mb-8 sm:mb-10">
                     <img 
                         src="images/RayHightower_spaceship.jpg" 
@@ -128,76 +128,120 @@
     </div>
 
     <script>
-        // Animated stars/particles flying past the windows
         const canvas = document.getElementById('space-canvas');
         const ctx = canvas.getContext('2d');
         
+        let comet = {
+            x: 0,
+            y: 0,
+            active: false,
+            progress: 0
+        };
+        
         function resizeCanvas() {
-            const img = canvas.parentElement.querySelector('img');
-            canvas.width = img.offsetWidth;
-            canvas.height = img.offsetHeight;
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+        
+        function launchComet() {
+            // Start from right side, moving left across the upper window area
+            comet.x = canvas.width * 0.85;
+            comet.y = canvas.height * 0.22;   // Upper area (window region)
+            comet.progress = 0;
+            comet.active = true;
+        }
+        
+        function drawComet() {
+            if (!comet.active) return;
+            
+            const progress = comet.progress;
+            const startX = canvas.width * 0.85;
+            const endX = canvas.width * 0.15;
+            
+            // Current position (moving left across window)
+            comet.x = startX + (endX - startX) * progress;
+            
+            // Slight downward curve to follow window perspective
+            comet.y = canvas.height * 0.22 + (progress * 25);
+            
+            // Draw comet head (bright core)
+            ctx.save();
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#a5f3fc';
+            
+            ctx.fillStyle = '#e0f2fe';
+            ctx.beginPath();
+            ctx.arc(comet.x, comet.y, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw glowing tail
+            const tailLength = 45;
+            const tailEndX = comet.x + tailLength * 0.9;
+            
+            const gradient = ctx.createLinearGradient(comet.x, comet.y, tailEndX, comet.y);
+            gradient.addColorStop(0, 'rgba(224, 242, 254, 0.9)');
+            gradient.addColorStop(0.4, 'rgba(103, 232, 249, 0.5)');
+            gradient.addColorStop(1, 'rgba(103, 232, 249, 0)');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(comet.x, comet.y);
+            ctx.lineTo(tailEndX, comet.y + 1);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (comet.active) {
+                comet.progress += 0.008; // Speed of the comet
+                
+                drawComet();
+                
+                // Reset when comet exits the window area
+                if (comet.progress >= 1) {
+                    comet.active = false;
+                    
+                    // Random delay before next comet appears (8 to 18 seconds)
+                    setTimeout(() => {
+                        if (!comet.active) {
+                            launchComet();
+                        }
+                    }, Math.random() * 10000 + 8000);
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function startAnimation() {
+            resizeCanvas();
+            
+            // Launch first comet after a short delay
+            setTimeout(() => {
+                launchComet();
+            }, 2500);
+            
+            animate();
         }
         
         window.addEventListener('resize', resizeCanvas);
         
-        let stars = [];
-        
-        function initStars() {
-            stars = [];
-            const count = 45;
-            for (let i = 0; i < count; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2.5 + 0.8,
-                    speed: Math.random() * 1.8 + 0.8,
-                    opacity: Math.random() * 0.6 + 0.3
-                });
-            }
-        }
-        
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (let i = 0; i < stars.length; i++) {
-                const star = stars[i];
-                
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-                ctx.fillRect(star.x, star.y, star.size, star.size);
-                
-                // Move stars from right to left (simulating forward motion)
-                star.x -= star.speed;
-                
-                // Reset star when it goes off screen
-                if (star.x < 0) {
-                    star.x = canvas.width;
-                    star.y = Math.random() * canvas.height;
-                }
-            }
-            
-            requestAnimationFrame(animateStars);
-        }
-        
-        // Initialize
         window.onload = function() {
             const img = document.querySelector('.spaceship-image');
             
-            img.onload = function() {
-                resizeCanvas();
-                initStars();
-                animateStars();
-            };
-            
-            // In case image is already loaded
             if (img.complete) {
-                resizeCanvas();
-                initStars();
-                animateStars();
+                startAnimation();
+            } else {
+                img.onload = startAnimation;
             }
         };
-        
-        // Also resize on window load
-        window.addEventListener('load', resizeCanvas);
     </script>
 </body>
 </html>
