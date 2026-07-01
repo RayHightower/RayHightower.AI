@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RayHightower.AI</title>
     <meta name="description" content="RayHightower.AI uses artificial intelligence to create custom products for the commercial real estate industry.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
@@ -142,15 +147,13 @@
         function initLights() {
             lights = [];
             
-            // Console lights positioned roughly over the control panels
-            // (These positions are approximate based on a typical cockpit layout)
             const lightPositions = [
-                { x: 0.18, y: 0.78, size: 2.8 },   // Left console
-                { x: 0.25, y: 0.82, size: 2.2 },   // Left console
-                { x: 0.32, y: 0.79, size: 2.5 },   // Left console
-                { x: 0.48, y: 0.85, size: 2.0 },   // Center console
-                { x: 0.55, y: 0.81, size: 2.6 },   // Center console
-                { x: 0.62, y: 0.84, size: 2.1 },   // Center-right console
+                { x: 0.18, y: 0.78, size: 2.8 },
+                { x: 0.25, y: 0.82, size: 2.2 },
+                { x: 0.32, y: 0.79, size: 2.5 },
+                { x: 0.48, y: 0.85, size: 2.0 },
+                { x: 0.55, y: 0.81, size: 2.6 },
+                { x: 0.62, y: 0.84, size: 2.1 },
             ];
             
             lightPositions.forEach((pos, index) => {
@@ -159,7 +162,7 @@
                     y: pos.y * canvas.height,
                     size: pos.size,
                     baseOpacity: 0.25 + Math.random() * 0.15,
-                    phase: index * 1.8,           // Different starting points
+                    phase: index * 1.8,
                     speed: 0.8 + Math.random() * 0.6
                 });
             });
@@ -170,11 +173,9 @@
             const time = Date.now() / 1000;
             
             lights.forEach(light => {
-                // Gentle pulsing effect
                 const pulse = Math.sin(time * light.speed + light.phase) * 0.5 + 0.5;
                 const opacity = light.baseOpacity * (0.6 + pulse * 0.8);
                 
-                // Soft glow
                 ctx.shadowBlur = 6;
                 ctx.shadowColor = '#67e8f9';
                 
@@ -183,7 +184,6 @@
                 ctx.arc(light.x, light.y, light.size, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Reset shadow
                 ctx.shadowBlur = 0;
             });
         }
