@@ -12,7 +12,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@500;600&display=swap');
         
         body {
             font-family: 'Inter', system_ui, sans-serif;
@@ -69,6 +69,70 @@
             pointer-events: none;
             z-index: 1;
         }
+
+        .book-row {
+            border-top: 1px solid rgb(31 41 55);
+        }
+
+        .book-inner {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .book-cover {
+            width: 140px;
+            height: auto;
+            flex-shrink: 0;
+            border-radius: 6px;
+            border: 1px solid rgba(103, 232, 249, 0.45);
+            box-shadow: 0 10px 24px rgb(0 0 0 / 0.35);
+        }
+
+        .book-kicker {
+            margin: 0 0 0.35rem;
+            color: rgb(156 163 175);
+            font-size: 0.95rem;
+        }
+
+        .book-title {
+            margin: 0 0 0.45rem;
+            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+            font-size: 1.35rem;
+            line-height: 1.25;
+            letter-spacing: -0.03em;
+        }
+
+        .book-title a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .book-title a:hover {
+            color: #67e8f9;
+        }
+
+        .book-blurb {
+            margin: 0;
+            color: rgb(209 213 219);
+            font-size: 1rem;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        @media (max-width: 640px) {
+            .book-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .book-cover {
+                width: 120px;
+            }
+        }
     </style>
 </head>
 <body class="bg-black text-white overflow-x-hidden">
@@ -108,6 +172,21 @@
                 
             </div>
         </div>
+
+        <section class="book-row px-5 sm:px-6 py-8">
+            <div class="book-inner">
+                <a href="https://www.amazon.com/FIRST-Celebrate-Capitalism-Raymond-Hightower/dp/B0HLMCG4DP" target="_blank" rel="noopener noreferrer">
+                    <img src="images/FIRST-Celebrate-Capitalism-and-Win-audible.jpg" alt="FIRST: Celebrate Capitalism &amp; Win by Ray Hightower" class="book-cover">
+                </a>
+                <div>
+                    <p class="book-kicker">Now available on <a href="https://www.amazon.com/FIRST-Celebrate-Capitalism-Raymond-Hightower/dp/B0HLMCG4DP" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:text-white">Amazon</a></p>
+                    <h2 class="book-title">
+                        <a href="https://www.amazon.com/FIRST-Celebrate-Capitalism-Raymond-Hightower/dp/B0HLMCG4DP" target="_blank" rel="noopener noreferrer">FIRST: Celebrate Capitalism &amp; Win</a>
+                    </h2>
+                    <p class="book-blurb">A celebration of capitalism, and a salute to the entrepreneurs who improve the world by serving others.</p>
+                </div>
+            </div>
+        </section>
 
         <!-- Footer -->
         <footer class="border-t border-gray-800 py-8 px-5 sm:px-6">
